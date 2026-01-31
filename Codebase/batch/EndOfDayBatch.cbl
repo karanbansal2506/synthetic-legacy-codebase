@@ -1,0 +1,15 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. EndOfDayBatch.
+
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 WS-BATCH-COUNT PIC 9(5) VALUE 0.
+
+       PROCEDURE DIVISION.
+
+       RUN-EOD.
+           PERFORM UNTIL NO-MORE-TRANSACTIONS
+               ADD 1 TO WS-BATCH-COUNT
+               PERFORM RUN-BATCH
+           END-PERFORM
+           GOBACK.

@@ -1,0 +1,26 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. SettlementProcessor.
+
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       COPY TransactionRecord.
+       COPY AccountRecord.
+
+       01 WS-SETTLEMENT-AMOUNT      PIC 9(9)V99.
+       01 WS-TXN-TYPE               PIC X(10).
+       01 WS-TXN-AMOUNT             PIC 9(9)V99.
+
+       PROCEDURE DIVISION.
+
+       PROCESS-TRANSACTION.
+           MOVE TRANSACTION-TYPE   TO WS-TXN-TYPE
+           MOVE TRANSACTION-AMOUNT TO WS-TXN-AMOUNT
+
+           IF WS-TXN-TYPE = "CREDIT"
+               ADD WS-TXN-AMOUNT TO WS-ACCOUNT-BALANCE
+           ELSE
+               SUBTRACT WS-TXN-AMOUNT FROM WS-ACCOUNT-BALANCE
+           END-IF
+
+           MOVE WS-TXN-AMOUNT TO WS-SETTLEMENT-AMOUNT
+           GOBACK.

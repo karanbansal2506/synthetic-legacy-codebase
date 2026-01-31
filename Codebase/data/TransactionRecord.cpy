@@ -1,0 +1,7 @@
+       01 TRANSACTION-RECORD.
+          05 TRANSACTION-ID            PIC X(12).
+          05 TRANSACTION-TYPE          PIC X(10).
+          05 TRANSACTION-AMOUNT        PIC 9(9)V99.
+          05 TRANSACTION-CURRENCY      PIC X(3).
+          05 TRANSACTION-RISK-SCORE    PIC 9(3).
+          05 TRANSACTION-COMPLIANT     PIC X.

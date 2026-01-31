@@ -1,0 +1,3 @@
+       01 ACCOUNT-RECORD.
+          05 ACCOUNT-ID        PIC X(12).
+          05 ACCOUNT-BALANCE   PIC 9(11)V99.
