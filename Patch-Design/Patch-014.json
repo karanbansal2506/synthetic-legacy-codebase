@@ -1,0 +1,44 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2018-014",
+    "created_at": "2018-03-19T01:05:00Z"
+  },
+
+  "guard": {
+    "condition": {
+      "expression": "REGULATOR-REQUEST-IN-FLIGHT = TRUE"
+    },
+    "enforcement": {
+      "mode": "hard",
+      "fallback_behavior": "freeze_exports"
+    }
+  },
+
+  "intent": {
+    "summary": "Prevent inconsistent reports during active regulator review",
+    "rationale": [
+      "Multiple report versions caused credibility loss"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "files": [
+      {
+        "path": "src/reporting/RegulatoryExporter.cbl",
+        "diff": [
+          "+ IF REGULATOR-REQUEST-IN-FLIGHT",
+          "+   STOP EXPORT-JOB",
+          "+ END-IF"
+        ]
+      }
+    ]
+  },
+
+  "human_context": {
+    "notes": [
+      "Triggered by compliance officer manually",
+      "Forgotten once, caused 2-day blackout"
+    ]
+  }
+}

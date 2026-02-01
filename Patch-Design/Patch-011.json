@@ -1,0 +1,39 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2016-011",
+    "created_at": "2016-11-30T23:55:00Z"
+  },
+
+  "intent": {
+    "summary": "Stub for future cross-transaction risk correlation",
+    "rationale": [
+      "Regulators signaled upcoming requirements",
+      "No time to implement full logic"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "files": [
+      {
+        "path": "src/risk/CrossTxnCorrelation.cbl",
+        "diff": [
+          "+ * DO NOT REMOVE — REGULATORY PLACEHOLDER",
+          "+ PERFORM NO-OP"
+        ]
+      }
+    ]
+  },
+
+  "legacy_status": {
+    "stability": "mysterious",
+    "documentation_quality": "none"
+  },
+
+  "human_context": {
+    "notes": [
+      "Future teams afraid to touch this",
+      "Later referenced in regulator correspondence"
+    ]
+  }
+}

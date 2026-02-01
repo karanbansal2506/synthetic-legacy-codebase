@@ -1,0 +1,35 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2016-010",
+    "created_at": "2016-04-12T06:00:00Z"
+  },
+
+  "intent": {
+    "summary": "Monitor frequency of compliance overrides",
+    "rationale": [
+      "Regulators suspected systematic bypassing"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "files": [
+      {
+        "path": "src/audit/OverrideMetrics.cbl",
+        "diff": [
+          "+ ADD 1 TO OVERRIDE-COUNT",
+          "+ IF OVERRIDE-COUNT > THRESHOLD",
+          "+   MOVE \"EXCESSIVE\" TO OVERRIDE-RISK",
+          "+ END-IF"
+        ]
+      }
+    ]
+  },
+
+  "human_context": {
+    "notes": [
+      "No alerts emitted",
+      "Data used later in enforcement actions"
+    ]
+  }
+}

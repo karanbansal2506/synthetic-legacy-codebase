@@ -1,0 +1,27 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2019-016",
+    "created_at": "2019-01-07T23:10:00Z"
+  },
+
+  "intent": {
+    "summary": "Prevent duplicate settlement during incident replays",
+    "rationale": [
+      "Rollback scripts double-applied settlements"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "files": [
+      {
+        "path": "src/ops/IncidentReplayGuard.cbl",
+        "diff": [
+          "+ IF TXN-REPLAY-FLAG = TRUE",
+          "+   SKIP SETTLEMENT",
+          "+ END-IF"
+        ]
+      }
+    ]
+  }
+}

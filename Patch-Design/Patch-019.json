@@ -1,0 +1,96 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2020-019",
+    "parent_codebase_id": "ERCP-CORE-LEGACY",
+    "patch_version": "4.0.0",
+    "created_at": "2020-02-11T04:00:00Z",
+    "author": {
+      "type": "human",
+      "id": "eng-arch-01",
+      "role": "principal"
+    },
+    "source": {
+      "trigger": "audit",
+      "request_id": "AUD-NONINT-2020"
+    }
+  },
+
+  "temporal_context": {
+    "effective_from": "2020-02-15",
+    "business_era": "Stabilization",
+    "regulatory_phase": "Post-Crisis Oversight",
+    "system_state_assumptions": [
+      "crisis_flags_present",
+      "mixed_guard_strictness"
+    ]
+  },
+
+  "guard": {
+    "condition": {
+      "expression": "CRISIS-MODE-FLAG = \"Y\""
+    },
+    "scope": {
+      "applies_to": [
+        {
+          "module": "SettlementProcessor",
+          "function": "processTransaction"
+        }
+      ]
+    },
+    "enforcement": {
+      "mode": "hard",
+      "fallback_behavior": "guarantee_equivalence"
+    }
+  },
+
+  "intent": {
+    "summary": "Guarantee no output change when crisis mode is inactive",
+    "rationale": [
+      "Auditors required formal proof of safety",
+      "Multiple crisis-era patches violated implicit assumptions"
+    ],
+    "non_goals": [
+      "No removal of crisis logic",
+      "No performance changes"
+    ]
+  },
+
+  "non_interference": {
+    "invariant": {
+      "description": "Settlement outputs identical when CRISIS-MODE-FLAG = 'N'",
+      "enforcement": {
+        "method": [
+          "differential_execution",
+          "static_guard_analysis"
+        ]
+      }
+    },
+    "monitored_outputs": [
+      "settlement_amount",
+      "ledger_balance"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "change_type": "contractual",
+    "isolation_level": "guarded",
+    "files": [
+      {
+        "path": "src/core/GuardContracts.cbl",
+        "diff": [
+          "+ IF CRISIS-MODE-FLAG = \"N\"",
+          "+   PERFORM VERIFY-OUTPUT-EQUIVALENCE",
+          "+ END-IF"
+        ]
+      }
+    ]
+  },
+
+  "dependency_context": {
+    "depends_on_patches": [
+      "PATCH-2019-018",
+      "PATCH-2017-012"
+    ]
+  }
+}

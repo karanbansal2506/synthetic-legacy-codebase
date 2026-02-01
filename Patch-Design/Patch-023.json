@@ -1,0 +1,30 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2022-023",
+    "created_at": "2022-03-14T01:30:00Z"
+  },
+
+  "intent": {
+    "summary": "Limit crisis-mode impact to settlement pipeline only",
+    "rationale": [
+      "Global flags caused unpredictable side effects"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "change_type": "containment",
+    "files": [
+      {
+        "path": "src/core/SystemFlags.cbl",
+        "diff": [
+          "+ IF MODULE = \"SETTLEMENT\"",
+          "+   APPLY CRISIS-MODE-FLAG",
+          "+ ELSE",
+          "+   IGNORE CRISIS-MODE-FLAG",
+          "+ END-IF"
+        ]
+      }
+    ]
+  }
+}

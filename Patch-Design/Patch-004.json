@@ -1,0 +1,181 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2010-004",
+    "parent_codebase_id": "ERCP-CORE-LEGACY",
+    "patch_version": "1.0.0",
+    "created_at": "2010-03-14T02:10:00Z",
+    "author": {
+      "type": "human",
+      "id": "eng-comp-03",
+      "role": "senior"
+    },
+    "source": {
+      "trigger": "compliance",
+      "request_id": "AUDIT-KYC-OBSERVATION"
+    }
+  },
+
+  "temporal_context": {
+    "effective_from": "2010-03-20",
+    "effective_until": null,
+    "business_era": "Early Compliance Awareness",
+    "regulatory_phase": "Post-Crisis Soft AML",
+    "system_state_assumptions": [
+      "kyc_data_partial",
+      "manual_kyc_review_process",
+      "no_real_time_enforcement"
+    ]
+  },
+
+  "guard": {
+    "condition": {
+      "expression": "account.kyc_status == \"EXPIRED\" OR account.kyc_status == \"MISSING\""
+    },
+    "scope": {
+      "applies_to": [
+        {
+          "module": "ComplianceRuleEvaluator",
+          "function": "evaluateAccountEligibility"
+        }
+      ]
+    },
+    "enforcement": {
+      "mode": "soft",
+      "fallback_behavior": "flag_only"
+    }
+  },
+
+  "intent": {
+    "summary": "Introduce KYC status flagging without blocking transactions",
+    "rationale": [
+      "Auditors requested visibility into KYC completeness",
+      "Operational leadership opposed hard enforcement"
+    ],
+    "non_goals": [
+      "No transaction denial",
+      "No customer notification",
+      "No automated remediation"
+    ]
+  },
+
+  "risk_profile": {
+    "declared_risks": [
+      "false_sense_of_compliance",
+      "flag_fatigue"
+    ],
+    "risk_level": "medium",
+    "blast_radius_estimate": {
+      "data": [
+        "account_profile"
+      ],
+      "modules": [
+        "ComplianceRuleEvaluator",
+        "ReportingEngine"
+      ]
+    }
+  },
+
+  "affected_code_context": {
+    "primary_logical_module": "ComplianceRuleEvaluator",
+    "secondary_logical_modules": [
+      "ReportingEngine"
+    ],
+    "code_anchors": [
+      "evaluateAccountEligibility"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "change_type": "additive",
+    "isolation_level": "guarded",
+    "files": [
+      {
+        "path": "src/compliance/ComplianceRuleEvaluator.cbl",
+        "diff": [
+          "+ IF KYC-STATUS = \"EXPIRED\" OR \"MISSING\"",
+          "+   SET ACCOUNT-FLAG TO \"KYC_ATTENTION\"",
+          "+ END-IF"
+        ]
+      }
+    ]
+  },
+
+  "constraints_introduced": {
+    "invariants_that_must_hold": [
+      "Settlement must proceed regardless of KYC flag state"
+    ],
+    "backward_compatibility_rules": [
+      "Existing account eligibility logic preserved"
+    ]
+  },
+
+  "non_interference": {
+    "invariant": {
+      "description": "Transaction eligibility unchanged when guard triggers",
+      "enforcement": {
+        "method": [
+          "differential_execution"
+        ]
+      }
+    },
+    "monitored_outputs": [
+      "transaction_status"
+    ]
+  },
+
+  "verification": {
+    "test_inputs": {
+      "synthetic": true,
+      "historical_simulated": true
+    },
+    "coverage_focus": [
+      "kyc_flagging_paths"
+    ],
+    "known_gaps": [
+      "Incorrect KYC metadata scenarios untested"
+    ]
+  },
+
+  "dependency_context": {
+    "depends_on_patches": [
+      "PATCH-2006-001"
+    ],
+    "conflicts_with": [],
+    "supersedes": []
+  },
+
+  "legacy_status": {
+    "stability": "stable",
+    "documentation_quality": "basic",
+    "expected_future_changes": "very_high"
+  },
+
+  "human_context": {
+    "notes": [
+      "Compliance wanted enforcement; business wanted visibility only",
+      "Flag was compromise solution"
+    ],
+    "institutional_knowledge_level": "medium"
+  },
+
+  "modernization": {
+    "target_language": "Java",
+    "semantic_equivalence_required": true,
+    "mapping_notes": [
+      "Flag-only logic must not introduce side effects"
+    ]
+  },
+
+  "governance": {
+    "approval_required": [
+      { "role": "compliance_officer" },
+      { "role": "senior_legacy_engineer" }
+    ],
+    "ai_usage_disclosure": false,
+    "audit_tags": [
+      "AML",
+      "KYC"
+    ]
+  }
+}

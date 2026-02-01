@@ -1,0 +1,99 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2017-012",
+    "parent_codebase_id": "ERCP-CORE-LEGACY",
+    "patch_version": "3.0.0",
+    "created_at": "2017-02-03T02:17:00Z",
+    "author": {
+      "type": "human",
+      "id": "eng-prod-ops-01",
+      "role": "senior"
+    },
+    "source": {
+      "trigger": "emergency",
+      "request_id": "INC-2017-0213"
+    }
+  },
+
+  "temporal_context": {
+    "effective_from": "2017-02-03",
+    "business_era": "Crisis Enforcement",
+    "regulatory_phase": "Post-BCBS-239",
+    "system_state_assumptions": [
+      "overnight_batch_window",
+      "manual_post_reconciliation"
+    ]
+  },
+
+  "guard": {
+    "condition": {
+      "expression": "BATCH-WINDOW = \"OVERNIGHT\" AND TXN-RISK-CLASS = \"LOW\""
+    },
+    "scope": {
+      "applies_to": [
+        {
+          "module": "SettlementBatchRunner",
+          "function": "processBatch"
+        }
+      ]
+    },
+    "enforcement": {
+      "mode": "override_soft",
+      "fallback_behavior": "continue_processing"
+    }
+  },
+
+  "intent": {
+    "summary": "Prevent overnight batch overruns by bypassing selected checks",
+    "rationale": [
+      "Settlement SLA violations triggered regulator inquiry",
+      "Low-risk flows deemed acceptable for temporary bypass"
+    ],
+    "non_goals": [
+      "No removal of audit logging",
+      "No permanent exemption"
+    ]
+  },
+
+  "risk_profile": {
+    "declared_risks": [
+      "latent_compliance_exposure",
+      "risk_misclassification"
+    ],
+    "risk_level": "critical",
+    "blast_radius_estimate": {
+      "modules": [
+        "SettlementBatchRunner",
+        "DailyLedgerFinalizer"
+      ]
+    }
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "change_type": "emergency_bypass",
+    "isolation_level": "guarded",
+    "files": [
+      {
+        "path": "src/batch/SettlementBatchRunner.cbl",
+        "diff": [
+          "+ IF BATCH-WINDOW = \"OVERNIGHT\"",
+          "+  AND TXN-RISK-CLASS = \"LOW\"",
+          "+   GO TO BATCH-CONTINUE",
+          "+ END-IF"
+        ]
+      }
+    ]
+  },
+
+  "dependency_context": {
+    "depends_on_patches": [
+      "PATCH-2013-007",
+      "PATCH-2016-010"
+    ]
+  },
+
+  "legacy_status": {
+    "stability": "dangerous_but_necessary"
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2013-007",
+    "parent_codebase_id": "ERCP-CORE-LEGACY",
+    "patch_version": "2.0.0",
+    "created_at": "2013-02-18T03:40:00Z",
+    "author": {
+      "type": "human",
+      "id": "eng-comp-03",
+      "role": "principal"
+    },
+    "source": {
+      "trigger": "regulatory",
+      "request_id": "REG-AML-2013-ENF"
+    }
+  },
+
+  "temporal_context": {
+    "effective_from": "2013-03-01",
+    "effective_until": null,
+    "business_era": "Regulatory Tightening",
+    "regulatory_phase": "Risk-Based Enforcement",
+    "system_state_assumptions": [
+      "kyc_flags_reliable",
+      "risk_classification_present"
+    ]
+  },
+
+  "guard": {
+    "condition": {
+      "expression": "account.kyc_status IN (\"EXPIRED\", \"MISSING\") AND txn.risk_class = \"HIGH_VALUE\""
+    },
+    "scope": {
+      "applies_to": [
+        {
+          "module": "SettlementProcessor",
+          "function": "preAuthorizeTransaction"
+        }
+      ]
+    },
+    "enforcement": {
+      "mode": "conditional_hard",
+      "fallback_behavior": "place_on_hold"
+    }
+  },
+
+  "intent": {
+    "summary": "Hold high-risk transactions when KYC is expired",
+    "rationale": [
+      "Regulators demanded demonstrable risk-based controls",
+      "Low-risk flows intentionally unaffected"
+    ],
+    "non_goals": [
+      "No blanket transaction blocking",
+      "No automated KYC remediation"
+    ]
+  },
+
+  "risk_profile": {
+    "declared_risks": [
+      "operational_backlog",
+      "manual_release_pressure"
+    ],
+    "risk_level": "high",
+    "blast_radius_estimate": {
+      "modules": [
+        "SettlementProcessor",
+        "OpsReviewQueue"
+      ]
+    }
+  },
+
+  "affected_code_context": {
+    "primary_logical_module": "SettlementProcessor",
+    "secondary_logical_modules": [
+      "OpsReviewQueue"
+    ],
+    "code_anchors": [
+      "preAuthorizeTransaction"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "change_type": "behavioral",
+    "isolation_level": "guarded",
+    "files": [
+      {
+        "path": "src/settlement/SettlementProcessor.cbl",
+        "diff": [
+          "+ IF KYC-STATUS IN (\"EXPIRED\", \"MISSING\")",
+          "+  AND TXN-RISK-CLASS = \"HIGH_VALUE\"",
+          "+   MOVE \"HOLD\" TO TXN-STATUS",
+          "+   PERFORM QUEUE-FOR-OPS-REVIEW",
+          "+ END-IF"
+        ]
+      }
+    ]
+  },
+
+  "dependency_context": {
+    "depends_on_patches": [
+      "PATCH-2010-004",
+      "PATCH-2011-005"
+    ]
+  },
+
+  "legacy_status": {
+    "stability": "fragile",
+    "expected_future_changes": "very_high"
+  }
+}

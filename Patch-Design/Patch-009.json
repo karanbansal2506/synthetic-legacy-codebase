@@ -1,0 +1,48 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2015-009",
+    "created_at": "2015-09-01T01:10:00Z"
+  },
+
+  "guard": {
+    "condition": {
+      "expression": "CURRENT-DATE - KYC-LAST-REVIEW-DATE > 730"
+    },
+    "enforcement": {
+      "mode": "hard",
+      "fallback_behavior": "force_expired"
+    }
+  },
+
+  "intent": {
+    "summary": "Automatically expire stale KYC records",
+    "rationale": [
+      "Manual expiry inconsistent across regions"
+    ]
+  },
+
+  "risk_profile": {
+    "risk_level": "high"
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "files": [
+      {
+        "path": "src/compliance/KYCExpiryCalculator.cbl",
+        "diff": [
+          "+ IF DAYS-SINCE-REVIEW > 730",
+          "+   MOVE \"EXPIRED\" TO KYC-STATUS",
+          "+ END-IF"
+        ]
+      }
+    ]
+  },
+
+  "human_context": {
+    "notes": [
+      "Caused sudden spike in held transactions",
+      "Ops complained for months"
+    ]
+  }
+}

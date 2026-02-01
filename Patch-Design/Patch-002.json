@@ -1,0 +1,172 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2007-002",
+    "parent_codebase_id": "ERCP-CORE-LEGACY",
+    "patch_version": "1.0.0",
+    "created_at": "2007-06-09T03:40:00Z",
+    "author": {
+      "type": "human",
+      "id": "eng-batch-02",
+      "role": "junior"
+    },
+    "source": {
+      "trigger": "performance",
+      "request_id": "BATCH-ORDER-OPT"
+    }
+  },
+
+  "temporal_context": {
+    "effective_from": "2007-06-12",
+    "effective_until": null,
+    "business_era": "System Genesis",
+    "regulatory_phase": "Pre-Compliance",
+    "system_state_assumptions": [
+      "overnight_batch_window_fixed",
+      "no_intrabatch_reordering"
+    ]
+  },
+
+  "guard": {
+    "condition": {
+      "expression": "batch.mode == \"END_OF_DAY\""
+    },
+    "scope": {
+      "applies_to": [
+        {
+          "module": "BatchScheduler",
+          "function": "runSettlementBatch"
+        }
+      ]
+    },
+    "enforcement": {
+      "mode": "hard",
+      "fallback_behavior": "abort_batch"
+    }
+  },
+
+  "intent": {
+    "summary": "Enforce deterministic settlement ordering for end-of-day batches",
+    "rationale": [
+      "Reduce reconciliation discrepancies",
+      "Simplify operational debugging"
+    ],
+    "non_goals": [
+      "No support for real-time settlement",
+      "No dynamic reprioritization"
+    ]
+  },
+
+  "risk_profile": {
+    "declared_risks": [
+      "batch_order_dependency",
+      "hidden_temporal_coupling"
+    ],
+    "risk_level": "medium",
+    "blast_radius_estimate": {
+      "data": [
+        "settlement_ledger"
+      ],
+      "modules": [
+        "SettlementProcessor",
+        "BatchScheduler"
+      ]
+    }
+  },
+
+  "affected_code_context": {
+    "primary_logical_module": "BatchScheduler",
+    "secondary_logical_modules": [
+      "SettlementProcessor"
+    ],
+    "code_anchors": [
+      "runSettlementBatch"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "change_type": "behavioral",
+    "isolation_level": "unguarded",
+    "files": [
+      {
+        "path": "src/batch/BatchScheduler.cbl",
+        "diff": [
+          "+ SORT TRANSACTIONS BY ACCOUNT-ID ASCENDING",
+          "+ PERFORM SETTLEMENT-SEQUENCE"
+        ]
+      }
+    ]
+  },
+
+  "constraints_introduced": {
+    "invariants_that_must_hold": [
+      "Settlement order must be deterministic across runs"
+    ],
+    "backward_compatibility_rules": [
+      "Existing ledger formats unchanged"
+    ]
+  },
+
+  "non_interference": {
+    "invariant": {
+      "description": "Settlement totals unchanged, only ordering affected",
+      "enforcement": {
+        "method": [
+          "reconciliation_comparison"
+        ]
+      }
+    },
+    "monitored_outputs": [
+      "ledger_balance"
+    ]
+  },
+
+  "verification": {
+    "test_inputs": {
+      "synthetic": true,
+      "historical_simulated": true
+    },
+    "coverage_focus": [
+      "batch_replay_consistency"
+    ],
+    "known_gaps": [
+      "Cross-account dependency scenarios untested"
+    ]
+  },
+
+  "dependency_context": {
+    "depends_on_patches": [],
+    "conflicts_with": [],
+    "supersedes": []
+  },
+
+  "legacy_status": {
+    "stability": "fragile",
+    "documentation_quality": "minimal",
+    "expected_future_changes": "low"
+  },
+
+  "human_context": {
+    "notes": [
+      "Assumption: account ordering does not affect net outcomes",
+      "This assumption was not formally reviewed"
+    ],
+    "institutional_knowledge_level": "isolated"
+  },
+
+  "modernization": {
+    "target_language": "Java",
+    "semantic_equivalence_required": true,
+    "mapping_notes": [
+      "SORT dependency must be preserved during migration"
+    ]
+  },
+
+  "governance": {
+    "approval_required": [
+      { "role": "operations_lead" }
+    ],
+    "ai_usage_disclosure": false,
+    "audit_tags": []
+  }
+}

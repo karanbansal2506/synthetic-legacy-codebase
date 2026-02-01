@@ -1,0 +1,177 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2008-003",
+    "parent_codebase_id": "ERCP-CORE-LEGACY",
+    "patch_version": "1.0.1",
+    "created_at": "2008-09-18T05:55:00Z",
+    "author": {
+      "type": "human",
+      "id": "eng-ops-07",
+      "role": "senior"
+    },
+    "source": {
+      "trigger": "audit",
+      "request_id": "OPS-TRACE-REQ"
+    }
+  },
+
+  "temporal_context": {
+    "effective_from": "2008-09-19",
+    "effective_until": null,
+    "business_era": "Pre-Crisis",
+    "regulatory_phase": "Heightened Scrutiny",
+    "system_state_assumptions": [
+      "disk_storage_abundant",
+      "log_review_manual"
+    ]
+  },
+
+  "guard": {
+    "condition": {
+      "expression": "txn.amount > 500000"
+    },
+    "scope": {
+      "applies_to": [
+        {
+          "module": "SettlementProcessor",
+          "function": "processTransaction"
+        }
+      ]
+    },
+    "enforcement": {
+      "mode": "soft",
+      "fallback_behavior": "log_only"
+    }
+  },
+
+  "intent": {
+    "summary": "Expand transaction-level logging for high-value settlements",
+    "rationale": [
+      "Operations requested greater traceability",
+      "Increased volatility observed in transaction patterns"
+    ],
+    "non_goals": [
+      "No automated alerts",
+      "No transaction blocking"
+    ]
+  },
+
+  "risk_profile": {
+    "declared_risks": [
+      "log_bloat",
+      "performance_degradation"
+    ],
+    "risk_level": "medium",
+    "blast_radius_estimate": {
+      "data": [
+        "transaction_logs"
+      ],
+      "modules": [
+        "AuditLoggingModule"
+      ]
+    }
+  },
+
+  "affected_code_context": {
+    "primary_logical_module": "SettlementProcessor",
+    "secondary_logical_modules": [
+      "AuditLoggingModule"
+    ],
+    "code_anchors": [
+      "processTransaction",
+      "writeExtendedLog"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "change_type": "additive",
+    "isolation_level": "guarded",
+    "files": [
+      {
+        "path": "src/audit/AuditLoggingModule.cbl",
+        "diff": [
+          "+ IF TXN-AMOUNT > 500000",
+          "+   PERFORM WRITE-EXTENDED-LOG",
+          "+ END-IF"
+        ]
+      }
+    ]
+  },
+
+  "constraints_introduced": {
+    "invariants_that_must_hold": [
+      "Logging must not delay settlement execution"
+    ],
+    "backward_compatibility_rules": [
+      "Existing log parsers remain functional"
+    ]
+  },
+
+  "non_interference": {
+    "invariant": {
+      "description": "Transaction settlement unaffected by logging",
+      "enforcement": {
+        "method": [
+          "latency_sampling"
+        ]
+      }
+    },
+    "monitored_outputs": [
+      "settlement_status"
+    ]
+  },
+
+  "verification": {
+    "test_inputs": {
+      "synthetic": true,
+      "historical_simulated": false
+    },
+    "coverage_focus": [
+      "high_value_transactions"
+    ],
+    "known_gaps": [
+      "Disk saturation scenarios untested"
+    ]
+  },
+
+  "dependency_context": {
+    "depends_on_patches": [
+      "PATCH-2007-002"
+    ],
+    "conflicts_with": [],
+    "supersedes": []
+  },
+
+  "legacy_status": {
+    "stability": "operationally_sensitive",
+    "documentation_quality": "minimal",
+    "expected_future_changes": "high"
+  },
+
+  "human_context": {
+    "notes": [
+      "Added under operational pressure",
+      "Expected to be temporary but no removal plan defined"
+    ],
+    "institutional_knowledge_level": "fragmented"
+  },
+
+  "modernization": {
+    "target_language": "Java",
+    "semantic_equivalence_required": true,
+    "mapping_notes": [
+      "Synchronous logging must remain synchronous"
+    ]
+  },
+
+  "governance": {
+    "approval_required": [
+      { "role": "operations_lead" }
+    ],
+    "ai_usage_disclosure": false,
+    "audit_tags": [
+      "OPS"
+    ]
+  }
+}

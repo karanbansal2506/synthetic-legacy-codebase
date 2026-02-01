@@ -1,0 +1,175 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2006-001",
+    "parent_codebase_id": "ERCP-CORE-LEGACY",
+    "patch_version": "1.0.0",
+    "created_at": "2006-11-02T01:15:00Z",
+    "author": {
+      "type": "human",
+      "id": "eng-core-01",
+      "role": "senior"
+    },
+    "source": {
+      "trigger": "performance",
+      "request_id": "INIT-CAP-THRESHOLD"
+    }
+  },
+
+  "temporal_context": {
+    "effective_from": "2006-11-05",
+    "effective_until": null,
+    "business_era": "System Genesis",
+    "regulatory_phase": "Basel-I-Inspired",
+    "system_state_assumptions": [
+      "batch_processing",
+      "single_currency_base",
+      "manual_end_of_day_reconciliation"
+    ]
+  },
+
+  "guard": {
+    "condition": {
+      "expression": "account.type == \"CORPORATE\""
+    },
+    "scope": {
+      "applies_to": [
+        {
+          "module": "CapitalCalculationEngine",
+          "function": "calculateRequiredCapital"
+        }
+      ]
+    },
+    "enforcement": {
+      "mode": "soft",
+      "fallback_behavior": "use_default_threshold"
+    }
+  },
+
+  "intent": {
+    "summary": "Introduce basic capital threshold logic for corporate accounts",
+    "rationale": [
+      "Early alignment with Basel I style capital awareness",
+      "Prevent extreme under-capitalization scenarios"
+    ],
+    "non_goals": [
+      "No regulatory reporting",
+      "No risk-weight differentiation",
+      "No enforcement on retail accounts"
+    ]
+  },
+
+  "risk_profile": {
+    "declared_risks": [
+      "magic_constant_usage",
+      "assumed_account_classification"
+    ],
+    "risk_level": "low",
+    "blast_radius_estimate": {
+      "data": [
+        "capital_snapshot"
+      ],
+      "modules": [
+        "CapitalCalculationEngine"
+      ]
+    }
+  },
+
+  "affected_code_context": {
+    "primary_logical_module": "CapitalCalculationEngine",
+    "secondary_logical_modules": [],
+    "code_anchors": [
+      "calculateRequiredCapital"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "change_type": "additive",
+    "isolation_level": "guarded",
+    "files": [
+      {
+        "path": "src/capital/CapitalCalculationEngine.cbl",
+        "diff": [
+          "+ IF ACCOUNT-TYPE = \"CORP\"",
+          "+   MOVE 0.08 TO CAPITAL-THRESHOLD",
+          "+ END-IF"
+        ]
+      }
+    ]
+  },
+
+  "constraints_introduced": {
+    "invariants_that_must_hold": [
+      "Capital calculation must not block settlement flows"
+    ],
+    "backward_compatibility_rules": [
+      "Retail account logic remains unchanged"
+    ]
+  },
+
+  "non_interference": {
+    "invariant": {
+      "description": "Capital calculation outputs unchanged for non-corporate accounts",
+      "enforcement": {
+        "method": [
+          "static_path_analysis"
+        ]
+      }
+    },
+    "monitored_outputs": [
+      "required_capital"
+    ]
+  },
+
+  "verification": {
+    "test_inputs": {
+      "synthetic": true,
+      "historical_simulated": false
+    },
+    "coverage_focus": [
+      "corporate_account_path"
+    ],
+    "known_gaps": [
+      "Multi-currency exposure not modeled",
+      "Stress conditions ignored"
+    ]
+  },
+
+  "dependency_context": {
+    "depends_on_patches": [],
+    "conflicts_with": [],
+    "supersedes": []
+  },
+
+  "legacy_status": {
+    "stability": "assumed_stable",
+    "documentation_quality": "poor",
+    "expected_future_changes": "high"
+  },
+
+  "human_context": {
+    "notes": [
+      "Threshold value selected based on industry practice, not mandate",
+      "Future risk weighting anticipated but deferred"
+    ],
+    "institutional_knowledge_level": "very_low"
+  },
+
+  "modernization": {
+    "target_language": "Java",
+    "semantic_equivalence_required": true,
+    "mapping_notes": [
+      "MOVE constant maps to configuration-driven value"
+    ]
+  },
+
+  "governance": {
+    "approval_required": [
+      { "role": "senior_legacy_engineer" }
+    ],
+    "ai_usage_disclosure": false,
+    "audit_tags": [
+      "BASEL-I"
+    ]
+  }
+}

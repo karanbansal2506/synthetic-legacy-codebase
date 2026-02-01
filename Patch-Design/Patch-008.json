@@ -1,0 +1,41 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2014-008",
+    "parent_codebase_id": "ERCP-CORE-LEGACY",
+    "created_at": "2014-06-09T05:15:00Z"
+  },
+
+  "intent": {
+    "summary": "Attach escalation codes to held transactions",
+    "rationale": [
+      "Regulators requested traceable escalation rationale"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "files": [
+      {
+        "path": "src/compliance/EscalationCodes.cbl",
+        "diff": [
+          "+ IF TXN-STATUS = \"HOLD\"",
+          "+   MOVE \"KYC_RISK\" TO ESCALATION-CODE",
+          "+ END-IF"
+        ]
+      }
+    ]
+  },
+
+  "dependency_context": {
+    "depends_on_patches": [
+      "PATCH-2013-007"
+    ]
+  },
+
+  "human_context": {
+    "notes": [
+      "Escalation codes later used for regulator dashboards",
+      "Nobody agreed on naming"
+    ]
+  }
+}

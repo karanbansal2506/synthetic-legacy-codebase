@@ -1,0 +1,181 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2012-006",
+    "parent_codebase_id": "ERCP-CORE-LEGACY",
+    "patch_version": "1.0.0",
+    "created_at": "2012-11-21T01:50:00Z",
+    "author": {
+      "type": "human",
+      "id": "eng-ops-09",
+      "role": "senior"
+    },
+    "source": {
+      "trigger": "operations",
+      "request_id": "OVERRIDE-TRACEABILITY"
+    }
+  },
+
+  "temporal_context": {
+    "effective_from": "2012-11-25",
+    "effective_until": null,
+    "business_era": "Early Compliance Awareness",
+    "regulatory_phase": "Manual Control Dominant",
+    "system_state_assumptions": [
+      "human_override_required",
+      "audit_review_post_facto"
+    ]
+  },
+
+  "guard": {
+    "condition": {
+      "expression": "override.applied == true"
+    },
+    "scope": {
+      "applies_to": [
+        {
+          "module": "SettlementProcessor",
+          "function": "finalizeTransaction"
+        }
+      ]
+    },
+    "enforcement": {
+      "mode": "hard",
+      "fallback_behavior": "require_annotation"
+    }
+  },
+
+  "intent": {
+    "summary": "Require annotation when compliance-related overrides are applied",
+    "rationale": [
+      "Auditors questioned undocumented manual interventions",
+      "Operations demanded override capability remain intact"
+    ],
+    "non_goals": [
+      "No override prevention",
+      "No automated approval workflow"
+    ]
+  },
+
+  "risk_profile": {
+    "declared_risks": [
+      "annotation_quality_variance",
+      "operator_error"
+    ],
+    "risk_level": "medium",
+    "blast_radius_estimate": {
+      "data": [
+        "override_log"
+      ],
+      "modules": [
+        "SettlementProcessor",
+        "AuditLoggingModule"
+      ]
+    }
+  },
+
+  "affected_code_context": {
+    "primary_logical_module": "SettlementProcessor",
+    "secondary_logical_modules": [
+      "AuditLoggingModule"
+    ],
+    "code_anchors": [
+      "finalizeTransaction"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "change_type": "behavioral",
+    "isolation_level": "guarded",
+    "files": [
+      {
+        "path": "src/settlement/SettlementProcessor.cbl",
+        "diff": [
+          "+ IF OVERRIDE-APPLIED",
+          "+   IF OVERRIDE-NOTE IS EMPTY",
+          "+     ABORT TRANSACTION",
+          "+   END-IF",
+          "+ END-IF"
+        ]
+      }
+    ]
+  },
+
+  "constraints_introduced": {
+    "invariants_that_must_hold": [
+      "Override capability must remain available"
+    ],
+    "backward_compatibility_rules": [
+      "Non-override flows unchanged"
+    ]
+  },
+
+  "non_interference": {
+    "invariant": {
+      "description": "Normal settlement unaffected when override=false",
+      "enforcement": {
+        "method": [
+          "guard_false_path_testing"
+        ]
+      }
+    },
+    "monitored_outputs": [
+      "transaction_status"
+    ]
+  },
+
+  "verification": {
+    "test_inputs": {
+      "synthetic": true,
+      "historical_simulated": true
+    },
+    "coverage_focus": [
+      "override_annotation_paths"
+    ],
+    "known_gaps": [
+      "Annotation semantic quality not validated"
+    ]
+  },
+
+  "dependency_context": {
+    "depends_on_patches": [
+      "PATCH-2010-004"
+    ],
+    "conflicts_with": [],
+    "supersedes": []
+  },
+
+  "legacy_status": {
+    "stability": "operationally_sensitive",
+    "documentation_quality": "moderate",
+    "expected_future_changes": "medium"
+  },
+
+  "human_context": {
+    "notes": [
+      "Seen as compromise between compliance and ops",
+      "Overrides increased during quarter-end periods"
+    ],
+    "institutional_knowledge_level": "high"
+  },
+
+  "modernization": {
+    "target_language": "Java",
+    "semantic_equivalence_required": true,
+    "mapping_notes": [
+      "Override annotations should map to immutable audit records"
+    ]
+  },
+
+  "governance": {
+    "approval_required": [
+      { "role": "operations_lead" },
+      { "role": "compliance_officer" }
+    ],
+    "ai_usage_disclosure": false,
+    "audit_tags": [
+      "AML",
+      "OPS"
+    ]
+  }
+}

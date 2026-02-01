@@ -1,0 +1,30 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2019-018",
+    "created_at": "2019-11-29T23:59:00Z"
+  },
+
+  "intent": {
+    "summary": "Global crisis-mode toggle",
+    "rationale": [
+      "Single switch requested by execs during hearings"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "files": [
+      {
+        "path": "src/core/SystemFlags.cbl",
+        "diff": [
+          "+ 01 CRISIS-MODE-FLAG PIC X VALUE \"Y\".",
+          "+ * TEMPORARY — REMOVE AFTER REVIEW"
+        ]
+      }
+    ]
+  },
+
+  "legacy_status": {
+    "stability": "permanently_temporary"
+  }
+}

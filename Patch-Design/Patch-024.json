@@ -1,0 +1,37 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2022-024",
+    "created_at": "2022-11-02T23:10:00Z"
+  },
+
+  "intent": {
+    "summary": "Prevent accidental refactors of regulator-sensitive logic",
+    "rationale": [
+      "Multiple near-misses during modernization attempts"
+    ]
+  },
+
+  "assessment": {
+    "expected_reasoning": [
+      "recognize_regulatory_binding",
+      "avoid_structural_changes"
+    ],
+    "red_flags": [
+      "suggests_refactor",
+      "removes_guard"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "files": [
+      {
+        "path": "src/core/Annotations.cbl",
+        "diff": [
+          "+ * @DO_NOT_REFACTOR",
+          "+ * REGULATOR-BOUND LOGIC BELOW"
+        ]
+      }
+    ]
+  }
+}

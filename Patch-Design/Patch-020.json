@@ -1,0 +1,39 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2020-020",
+    "created_at": "2020-05-03T06:20:00Z"
+  },
+
+  "intent": {
+    "summary": "Add automated verification for guard-false execution paths",
+    "rationale": [
+      "Most regressions occurred when guards were inactive"
+    ]
+  },
+
+  "verification": {
+    "test_inputs": {
+      "synthetic": true
+    },
+    "coverage_focus": [
+      "guard_false_paths",
+      "boundary_conditions"
+    ],
+    "known_gaps": [
+      "Year-end rollover not simulated"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "files": [
+      {
+        "path": "src/test/GuardFalseHarness.cbl",
+        "diff": [
+          "+ SET ALL-GUARDS TO FALSE",
+          "+ PERFORM EXECUTE-BASELINE-PATH"
+        ]
+      }
+    ]
+  }
+}

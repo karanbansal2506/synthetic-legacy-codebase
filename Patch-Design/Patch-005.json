@@ -1,0 +1,177 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2011-005",
+    "parent_codebase_id": "ERCP-CORE-LEGACY",
+    "patch_version": "1.0.0",
+    "created_at": "2011-07-02T04:05:00Z",
+    "author": {
+      "type": "human",
+      "id": "eng-risk-06",
+      "role": "senior"
+    },
+    "source": {
+      "trigger": "audit",
+      "request_id": "RISK-CLASSIFICATION-REQ"
+    }
+  },
+
+  "temporal_context": {
+    "effective_from": "2011-07-10",
+    "effective_until": null,
+    "business_era": "Early Compliance Awareness",
+    "regulatory_phase": "Threshold-Based AML",
+    "system_state_assumptions": [
+      "thresholds_static",
+      "manual_report_review"
+    ]
+  },
+
+  "guard": {
+    "condition": {
+      "expression": "txn.amount >= 1000000"
+    },
+    "scope": {
+      "applies_to": [
+        {
+          "module": "RiskAggregationService",
+          "function": "classifyTransaction"
+        }
+      ]
+    },
+    "enforcement": {
+      "mode": "soft",
+      "fallback_behavior": "classification_only"
+    }
+  },
+
+  "intent": {
+    "summary": "Classify high-value transactions for risk reporting",
+    "rationale": [
+      "Auditors requested breakdown of transaction risk exposure",
+      "No mandate yet for blocking or escalation"
+    ],
+    "non_goals": [
+      "No alerts",
+      "No settlement impact",
+      "No cross-transaction correlation"
+    ]
+  },
+
+  "risk_profile": {
+    "declared_risks": [
+      "threshold_rigidity",
+      "future_false_positives"
+    ],
+    "risk_level": "low",
+    "blast_radius_estimate": {
+      "data": [
+        "risk_summary"
+      ],
+      "modules": [
+        "RiskAggregationService"
+      ]
+    }
+  },
+
+  "affected_code_context": {
+    "primary_logical_module": "RiskAggregationService",
+    "secondary_logical_modules": [
+      "ReportingEngine"
+    ],
+    "code_anchors": [
+      "classifyTransaction"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "change_type": "additive",
+    "isolation_level": "guarded",
+    "files": [
+      {
+        "path": "src/risk/RiskAggregationService.cbl",
+        "diff": [
+          "+ IF TXN-AMOUNT >= 1000000",
+          "+   MOVE \"HIGH_VALUE\" TO TXN-RISK-CLASS",
+          "+ END-IF"
+        ]
+      }
+    ]
+  },
+
+  "constraints_introduced": {
+    "invariants_that_must_hold": [
+      "Risk classification must not alter transaction flow"
+    ],
+    "backward_compatibility_rules": [
+      "Existing reporting formats unchanged"
+    ]
+  },
+
+  "non_interference": {
+    "invariant": {
+      "description": "Classification logic does not affect settlement",
+      "enforcement": {
+        "method": [
+          "output_comparison"
+        ]
+      }
+    },
+    "monitored_outputs": [
+      "risk_class"
+    ]
+  },
+
+  "verification": {
+    "test_inputs": {
+      "synthetic": true,
+      "historical_simulated": true
+    },
+    "coverage_focus": [
+      "threshold_boundary_conditions"
+    ],
+    "known_gaps": [
+      "Inflation-adjusted thresholds not considered"
+    ]
+  },
+
+  "dependency_context": {
+    "depends_on_patches": [
+      "PATCH-2008-003"
+    ],
+    "conflicts_with": [],
+    "supersedes": []
+  },
+
+  "legacy_status": {
+    "stability": "stable",
+    "documentation_quality": "basic",
+    "expected_future_changes": "high"
+  },
+
+  "human_context": {
+    "notes": [
+      "Threshold chosen to minimize noise",
+      "Expected to be revisited once enforcement required"
+    ],
+    "institutional_knowledge_level": "medium"
+  },
+
+  "modernization": {
+    "target_language": "Java",
+    "semantic_equivalence_required": true,
+    "mapping_notes": [
+      "Classification enums must remain backward compatible"
+    ]
+  },
+
+  "governance": {
+    "approval_required": [
+      { "role": "risk_officer" }
+    ],
+    "ai_usage_disclosure": false,
+    "audit_tags": [
+      "AML"
+    ]
+  }
+}

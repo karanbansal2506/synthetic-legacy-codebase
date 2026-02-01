@@ -1,0 +1,38 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2024-028",
+    "created_at": "2024-07-08T06:00:00Z"
+  },
+
+  "intent": {
+    "summary": "Enable COBOL vs Java output comparison",
+    "rationale": [
+      "Confidence required before any phased cutover"
+    ]
+  },
+
+  "non_interference": {
+    "invariant": {
+      "description": "Java and COBOL outputs identical under same guards",
+      "enforcement": {
+        "method": [
+          "differential_execution"
+        ]
+      }
+    }
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "files": [
+      {
+        "path": "src/test/DifferentialRunner.cbl",
+        "diff": [
+          "+ PERFORM RUN-COBOL-VERSION",
+          "+ PERFORM RUN-JAVA-VERSION",
+          "+ PERFORM COMPARE-OUTPUTS"
+        ]
+      }
+    ]
+  }
+}

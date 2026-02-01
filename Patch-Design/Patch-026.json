@@ -1,0 +1,38 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2023-026",
+    "created_at": "2023-06-19T04:40:00Z"
+  },
+
+  "intent": {
+    "summary": "Disclose AI-assisted changes for audit purposes",
+    "rationale": [
+      "Emerging regulator guidance on AI transparency"
+    ]
+  },
+
+  "governance": {
+    "approval_required": [
+      { "role": "senior_legacy_engineer" },
+      { "role": "compliance_officer" }
+    ],
+    "ai_usage_disclosure": true,
+    "audit_tags": [
+      "SOX",
+      "ModelRisk"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "files": [
+      {
+        "path": "src/core/PatchProvenance.cbl",
+        "diff": [
+          "+ MOVE \"AI_ASSISTED\" TO PATCH-ORIGIN",
+          "+ MOVE AGENT-ID TO PATCH-AGENT-REF"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2017-013",
+    "created_at": "2017-02-04T05:50:00Z"
+  },
+
+  "intent": {
+    "summary": "Defer non-critical risk scoring during peak load",
+    "rationale": [
+      "Risk engine saturated CPU",
+      "Deferred scoring reviewed next business day"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "files": [
+      {
+        "path": "src/risk/RiskScoringEngine.cbl",
+        "diff": [
+          "+ IF SYSTEM-LOAD > THRESHOLD",
+          "+   MOVE TXN-ID TO DEFERRED-RISK-QUEUE",
+          "+   EXIT PARAGRAPH",
+          "+ END-IF"
+        ]
+      }
+    ]
+  },
+
+  "human_context": {
+    "notes": [
+      "Originally planned for 72 hours",
+      "Still active in some regions"
+    ]
+  }
+}

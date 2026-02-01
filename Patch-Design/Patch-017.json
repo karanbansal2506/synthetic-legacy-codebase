@@ -1,0 +1,32 @@
+{
+  "patch_identity": {
+    "patch_id": "PATCH-2019-017",
+    "created_at": "2019-06-22T02:40:00Z"
+  },
+
+  "intent": {
+    "summary": "Track SLA breaches without emitting alerts",
+    "rationale": [
+      "Alert fatigue during crisis periods"
+    ]
+  },
+
+  "code_change": {
+    "language": "COBOL",
+    "files": [
+      {
+        "path": "src/metrics/SLACounters.cbl",
+        "diff": [
+          "+ ADD 1 TO SLA-BREACH-COUNT"
+        ]
+      }
+    ]
+  },
+
+  "human_context": {
+    "notes": [
+      "Data later used in regulatory fines",
+      "Engineers unaware at the time"
+    ]
+  }
+}
